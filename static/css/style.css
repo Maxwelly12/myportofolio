@@ -77,113 +77,13 @@ h1,
   gap: 1.5rem 3rem;
 }
 
-.hero-identity {
-  grid-area: identity;
-}
-
-.hero-details {
-  grid-area: details;
-}
-
-.hero-kicker {
-  font-size: 0.85rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--accent-dark);
-  font-weight: 700;
-  margin-bottom: 0.75rem;
-}
-
-.hero-identity h1 {
-  font-size: clamp(3rem, 7vw, 5rem);
-  line-height: 0.95;
-}
-
-.bio {
-  color: var(--text-muted);
-  max-width: 480px;
-  margin-bottom: 1.5rem;
-}
-
-.meta-list {
-  display: flex;
-  gap: 2rem;
-  margin-bottom: 1.5rem;
-}
-
-.meta-row dt {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-muted);
-  margin-bottom: 0.15rem;
-}
-
-.meta-row dd {
-  font-weight: 600;
-}
-
-.social-links {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.social-link {
-  display: inline-block;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-decoration: none;
-  color: var(--paper);
-  background-color: var(--ink);
-  border-radius: var(--radius);
-  padding: 0.5rem 1.1rem;
-  transition: background-color 0.2s ease;
-}
-
-.social-link:hover {
-  background-color: var(--accent);
-}
-
-.hero-photo {
-  grid-area: photo;
-  align-self: center;
-  position: relative;
-}
-
-.photo-block {
-  position: absolute;
-  top: 1.25rem;
-  left: 1.25rem;
-  width: 100%;
-  height: 100%;
-  background-color: var(--accent);
-  border-radius: var(--radius);
-  z-index: 0;
-}
-
-.avatar {
-  position: relative;
-  z-index: 1;
-  display: block;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-  border-radius: var(--radius);
-  border: 3px solid var(--ink);
-}
-
-.hero {
-  padding: 4.5rem 0 5rem;
-}
-
-.hero-grid {
+.hero-grid-reverse {
   display: grid;
-  grid-template-columns: 1.3fr 1fr;
+  grid-template-columns: 1fr 1.3fr;
   grid-template-areas:
-    "identity photo"
-    "details  photo";
-  gap: 1.5rem 3rem;
+    "photo identity"
+    "photo details";
+  gap: 3rem 1.5rem;
 }
 
 .hero-identity {
@@ -212,6 +112,12 @@ h1,
   color: var(--text-muted);
   max-width: 480px;
   margin-bottom: 1.5rem;
+}
+
+.bioexperience {
+  color: var(--text-muted);
+  max-width: 450px;
+  margin-bottom: 10rem;
 }
 
 .meta-list {
@@ -260,11 +166,43 @@ h1,
   position: relative;
 }
 
+.hero-photo.exper-photo {
+  grid-area: photo;
+  align-self: start;
+  position: relative;
+}
+
+.exper-photo {
+  margin-top: 4rem;
+}
+
 .photo-block {
   position: absolute;
   top: 1.25rem;
   left: 1.25rem;
   width: 100%;
+  height: 100%;
+  background-color: var(--accent);
+  border-radius: var(--radius);
+  z-index: 0;
+}
+
+.photo-block-experience {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  width: 65%;
+  height: 100%;
+  background-color: var(--accent);
+  border-radius: var(--radius);
+  z-index: 0;
+}
+
+.photo-block-experience-left {
+  position: absolute;
+  top: 1rem;
+  left: -1.5rem;
+  width: 65%;
   height: 100%;
   background-color: var(--accent);
   border-radius: var(--radius);
@@ -280,4 +218,88 @@ h1,
   object-fit: cover;
   border-radius: var(--radius);
   border: 3px solid var(--ink);
+}
+
+.avatarexperience {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 60%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: var(--radius);
+  border: 1px solid var(--ink);
+}
+
+.Exper {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 50%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: var(--radius);
+  border: 3px solid var(--ink);
+}
+
+.title-border {
+  display: flex;
+  align-items: center;
+  text-align: center;
+}
+
+.title {
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.15rem;
+  margin-top: 5rem;
+}
+
+.title-border::before,
+.title-border::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #000;
+  margin-top: 5rem;
+}
+
+.middletext {
+  font-size: 1.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.15rem;
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  margin: 0auto;
+  padding: 4rem;
+}
+
+.photo-grid img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: var(--radius);
+  border: 3px solid var(--ink);
+}
+
+.text-border {
+  display: flex;
+  align-items: center;
+  text-align: center;
+}
+
+.text-border::before,
+.text-border::after {
+  content: "";
+  flex: 1;
+  margin-top: 5rem;
+}
+
+.exper-photo {
+  margin-top: -1rem;
 }
