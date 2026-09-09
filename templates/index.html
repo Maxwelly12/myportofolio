@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Maxwelly F.H. Simatupang - Portofolio</title>
+    <title>{{ name }} - Portofolio</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -15,10 +15,10 @@
   <body>
     <header class="site-header">
       <div class="container">
-        <a href="#profile" class="brand">Maxwelly F.H. Simatupang</a>
+        <a href="{% url 'main:show_main' %}" class="brand">{{ name }}</a>        
         <nav>
-          <a href="#profile">Profile</a>
-          <a href="#Experience">Experience</a>
+          <a href="{% url 'main:show_main' %}">Profile</a>
+          <a href="{% url 'main:show_experience' %}">Experience</a>       
         </nav>
       </div>
     </header>
@@ -30,33 +30,28 @@
             <p class="hero-kicker">
               Sistem Informasi &middot; Universitas Indonesia
             </p>
-            <h1>Maxwelly F.H. Simatupang</h1>
+            <h1>{{ name }}</h1>
           </div>
           <div class="hero-photo">
             <div class="photo-block"></div>
             <img
               class="avatar"
               src="/static/img/Max.jpg"
-              alt="Photo of Maxwelly F.H. Simatupang"
+              alt="Photo of {{ name }}"
             />
           </div>
           <div class="hero-details">
-            <p class="bio">
-              A Computer Science Student who embarks on technology ,especialy with
-              big data and data science, and business ,especialy with digital marketing 
-              and public relations. Have experience with some potition in public relations 
-              and digital marketing that give me a knowledge in communication and 
-              analitical thinking. Now, greatly to study more on data science or digital 
-              marketer through out organization or  boot camp. 
+            <p class="bio"> 
+              {{ bio }}
             </p>
             <dl class="meta-list">
               <div class="meta-row">
                 <dt>NPM</dt>
-                <dd>2506584294</dd>
+                <dd>{{ npm }}</dd>
               </div>
               <div class="meta-row">
                 <dt>Program</dt>
-                <dd>S1 Sistem Informasi</dd>
+                <dd>{{ study_program }}</dd>
               </div>
             </dl>
             <div class="social-links">
@@ -165,7 +160,7 @@
     <footer class="site-footer">
       <div class="container">
         <p>
-          &copy; 2026 Maxwelly F.H. Simatupang. Fakultas Ilmu Komputer,
+          &copy; 2026 {{ name }}. Fakultas Ilmu Komputer,
           Universitas Indonesia.
         </p>
       </div>
