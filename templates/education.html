@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Education - {{ name }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/css/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <a href="{% url 'main:show_main' %}" class="brand">{{ name }}</a>
+        <nav>
+          <a href="{% url 'main:show_main' %}">Profile</a>
+          <a href="{% url 'main:show_education' %}">Education</a>
+          <a href="{% url 'main:show_experience' %}">Experience</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="experience-section" id="experience">
+        <div class="container">
+          <p class="section-kicker">My whole journey searching for knowledge</p>
+          <h1>Education</h1>
+
+          <div class="timeline">
+            {% for education in education_list %}
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-content">
+                <span class="experience-category">
+                  {{ education.get_level_display }}
+                </span>
+                <h2>{{ education.institution_name }} - {{ education.get_category_display }}</h2>
+                {% if education.field_of_study %}
+                <p class="experience-description">
+                  {{ education.field_of_study }}
+                </p>
+                {% endif %}
+                <p class="experience-description">
+                  {{ education.description }}
+                </p>
+
+                {% if education.is_ongoing %}
+                <p class="experience-status">
+                  {{ education.started_at|date:"M Y" }} - Ongoing
+                </p>
+                {% else %}
+                <p class="experience-status">
+                  {{ education.started_at|date:"M Y" }} - {{  education.ended_at|date:"M Y" }}
+                </p>
+                {% endif %}
+              </div>
+            </div>
+            {% empty %}
+            <p class="empty-state">No education records added yet.</p>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <div class="container">
+        <p>
+          &copy; 2026 Maxwelly F.H. Simatupang. Fakultas Ilmu Komputer,
+          Universitas Indonesia.
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

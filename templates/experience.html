@@ -18,6 +18,7 @@
         <a href="{% url 'main:show_main' %}" class="brand">{{ name }}</a>
         <nav>
           <a href="{% url 'main:show_main' %}">Profile</a>
+          <a href="{% url 'main:show_education' %}">Education</a>
           <a href="{% url 'main:show_experience' %}">Experience</a>
         </nav>
       </div>
@@ -39,13 +40,13 @@
               <p class="experience-description">{{ experience.description }}</p>
 
               {% if experience.is_ongoing %}
-              <p class="experience-status">Sedang berlangsung</p>
+              <p class="experience-status">{{ experience.started_at|date:"M Y" }} - Ongoing</p>
               {% else %}
-              <p class="experience-status">Selesai</p>
+              <p class="experience-status">{{ experience.started_at|date:"M Y" }} - {{  experience.ended_at|date:"M Y" }}</p>
               {% endif %}
             </article>
             {% empty %}
-            <p class="empty-state">Belum ada pengalaman yang ditambahkan.</p>
+            <p class="empty-state">Experience has not been added yet.</p>
             {% endfor %}
           </div>
         </div>

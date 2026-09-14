@@ -3,6 +3,7 @@ from django.db import models
 # Create your models here.
 import uuid
 from django.db import models
+from django.utils import timezone
 
 class Experience(models.Model):
     EXPERIENCE_CHOICES = [
@@ -24,6 +25,27 @@ class Experience(models.Model):
     def __str__(self):
         return self.title
     
+    @property
+    def is_ongoing(self):
+        return self.ended_at is None
+
+class Education(models.Model):
+    EDUCATION_CHOICES = [
+        ('middle', 'Middle School'),
+        ('high_school', 'High School'),
+        ('bachelor', 'Bachelor'),
+    ]   
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    institution_name = models.CharField(max_length=255)
+    description = models.TextField()
+    category = models.CharField(max_length=20, choices=EDUCATION_CHOICES, default='bachelor')
+    thumbnail = models.URLField(blank=True, null=True)
+    started_at = models.DateTimeField(default=timezone.now)    
+    ended_at = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return self.institution_name
+
     @property
     def is_ongoing(self):
         return self.ended_at is None

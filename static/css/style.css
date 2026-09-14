@@ -357,3 +357,56 @@ h1,
   font-size: 0.85rem;
   font-weight: 600;
 }
+
+.timeline {
+  position: relative;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 1rem 0;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 20px;
+  width: 2px;
+  background-color: var(--line);
+}
+
+.timeline-item {
+  position: relative;
+  padding-left: 50px;
+  margin-bottom: 2rem;
+}
+
+.timeline-item:last-child {
+  margin-bottom: 0;
+}
+
+/* The dot marking each point on the line */
+.timeline-dot {
+  position: absolute;
+  left: 12px;
+  top: 6px;
+  width: 18px;
+  height: 18px;
+  background-color: var(--accent-dark);
+  border: 3px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--line);
+  z-index: 1;
+}
+
+.timeline-content {
+  padding: 1.25rem;
+  background-color: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.timeline-content h2 {
+  margin: 0.5rem 0;
+  font-size: 1.25rem;
+}
