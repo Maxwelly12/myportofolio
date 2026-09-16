@@ -14,10 +14,7 @@ Experience - Daftar pengalaman kerja, volunter, atau organisasi yang pernah diik
 Education - Riwayat pendidikan diri dan disajikan dalam bentuk timeline dengan pengalaman atau pengetahuan yang didapatkan 
 dari pendidikan tersebut. 
 
-Model
-
 Model Education didefinisikan di main/models.py dengan field berikut:
-
 -id (UUIDField) : primary key unik
 -institution_name (CharField) : nama institusi pendidikan.
 -description (TextField) : deskripsi/keterangan pendidikan.
