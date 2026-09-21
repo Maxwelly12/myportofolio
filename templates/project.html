@@ -6,13 +6,13 @@
     <main>
         <section class="experience-section" id="experience">
             <div class="container">
-                <p class="section-kicker">Karya yang saya bangun</p>
+                <p class="section-kicker">The work i have built</p>
                 <div class="project-header">
                     <h1>Projects</h1>
                     <a href="{% url 'main:create_project' %}"
                        class="button project-add-button">
                         <span aria-hidden="true">+</span>
-                        Tambah Proyek
+                        Add project
                     </a>
                 </div>
                 <form method="get"
@@ -21,10 +21,10 @@
                     <input type="search"
                            name="title"
                            value="{{ title_query }}"
-                           placeholder="Cari berdasarkan nama proyek"
+                           placeholder="Find base on project's name"
                            class="project-search__input"
-                           aria-label="Cari berdasarkan nama proyek">
-                    <button type="submit" class="button">Cari</button>
+                           aria-label="Find base on project's name">
+                    <button type="submit" class="button">Search</button>
                 </form>
                 <div class="experience-grid project-grid">
                     {% for project in project_list %}
@@ -40,7 +40,7 @@
                             <div class="project-card-actions">
                                 <div class="project-actions">
                                     {% if project.project_url %}
-                                        <a href="{{ project.project_url }}" class="button">Lihat Project</a>
+                                        <a href="{{ project.project_url }}" class="button">See project</a>
                                     {% endif %}
                                     {% include "components/project_delete_modal.html" with project=project %}
                                 </div>
@@ -48,9 +48,9 @@
                         </article>
                     {% empty %}
                         {% if title_query %}
-                            <p class="empty-state">Tidak ada proyek dengan nama tersebut.</p>
+                            <p class="empty-state">There is no project with that name.</p>
                         {% else %}
-                            <p class="empty-state">Belum ada proyek yang ditambahkan.</p>
+                            <p class="empty-state">No project has been added.</p>
                         {% endif %}
                     {% endfor %}
                 </div>

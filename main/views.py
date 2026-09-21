@@ -4,8 +4,8 @@ from django.core import serializers
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
-from main.models import Experience, Education, Project
-from main.forms import ProjectForm
+from main.models import Experience, Education, Project, Testimony
+from main.forms import ProjectForm, TestimonyForm
 
 # Create your views here.
 
@@ -45,11 +45,11 @@ def create_project(request):
 
     if request.method == "POST" and form.is_valid():
         form.save()
-        messages.success(request, "Proyek baru berhasil ditambahkan!")
+        messages.success(request, "Project has been added!")
         return redirect("main:show_projects")
 
     context = {
-        "name": "Burhan",   
+        "name": "Maxwelly F.H. Simatupang",   
         "form": form,
     }
     return render(request, "projects_form.html", context)
@@ -85,7 +85,57 @@ def delete_project(request, project_id):
 
     if request.method == "POST":
         project.delete()
-        messages.success(request, "Project berhasil dihapus!")
+        messages.success(request, "Project has been deleted!")
         return redirect("main:show_projects")
 
     return redirect("main:show_projects")
+
+def create_testimony(request):
+    form = TestimonyForm(request.POST or None)
+
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "New testimony has been added!")
+        return redirect("main:show_testimony")
+
+    context = {
+        "name": "Maxwelly F.H. Simatupang",   
+        "form": form,
+    }
+    return render(request, "testimony_form.html", context)
+
+def show_testimony(request):
+    json_response = get_testimonys_json(request)
+
+    testimonys = serializers.deserialize(
+        "json",
+        json_response.content.decode("utf-8"),
+    )
+    testimonys = [testimony.object for testimony in testimonys]
+    title_query = request.GET.get("title", "").strip()
+    context = {
+        "name": "Maxwelly F.H.  Simatupang",
+        "testimony_list": testimonys,
+        "title_query": title_query,
+    }
+    return render(request, "testimony.html", context)
+
+def get_testimonys_json(request):
+    title_query = request.GET.get("title", "").strip()
+    testimonys = Testimony.objects.all()
+
+    if title_query:
+        testimonys = testimonys.filter(name__icontains=title_query)
+
+    testimonys_json = serializers.serialize("json", testimonys)
+    return HttpResponse(testimonys_json, content_type="application/json")
+
+def delete_testimony(request, testimony_id):
+    testimony = get_object_or_404(Testimony, pk=testimony_id)
+
+    if request.method == "POST":
+        testimony.delete()
+        messages.success(request, "Testimony has been erased!")
+        return redirect("main:show_testimony")
+
+    return redirect("main:show_testimony")

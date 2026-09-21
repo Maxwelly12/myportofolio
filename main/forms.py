@@ -1,6 +1,6 @@
 from django.forms import ModelForm, TextInput, Textarea, URLInput
 
-from main.models import Project
+from main.models import Project, Testimony
 
 class ProjectForm(ModelForm):
     class Meta:
@@ -47,6 +47,42 @@ class ProjectForm(ModelForm):
             "project_image_url": URLInput(
                 attrs={
                     "placeholder": "https://drive.google.com/thumbnail?id=...&sz=w1000",
+                }
+            ),
+        }
+
+class TestimonyForm(ModelForm) :
+    class Meta:
+        model = Testimony
+        fields = [
+            "name", 
+            "relationship",
+            "description",
+        ]
+
+        labels = {
+            "name" :  "Name",
+            "relationship" : "What is your relationship to Maxwelly  F.h. Simatupang",
+            "description" : "Testimony", 
+        }
+
+        widgets = {
+            "name": TextInput(
+                attrs={
+                    "placeholder": "What is your name",
+                    "maxlength": 255,
+                }
+            ),
+            "relationship": TextInput(
+                attrs={
+                    "placeholder": "What is your relationship to Maxwelly  F.h. Simatupang",
+                    "maxlength": 255,
+                }   
+            ),
+            "description": Textarea(
+                attrs={
+                    "placeholder": "Give your testimony to Maxwelly F.H. Simatupang",
+                    "rows": 3,
                 }
             ),
         }

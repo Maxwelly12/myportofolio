@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block meta %}
+    <title>Testimony - {{ name }}</title>
+{% endblock meta %}
+{% block content %}
+    <main>
+        <section class="experience-section" id="experience">
+            <div class="container">
+                <p class="section-kicker">Another person testimony of me</p>
+                <div class="project-header">
+                    <h1>Testimony</h1>
+                    <a href="{% url 'main:create_testimony' %}"
+                       class="button project-add-button">
+                        <span aria-hidden="true">+</span>
+                        Add Testimony
+                    </a>
+                </div>
+                <form method="get"
+                      action="{% url 'main:show_testimony' %}"
+                      class="project-search">
+                    <input type="search"
+                           name="title"
+                           value="{{ title_query }}"
+                           placeholder="Find base on name"
+                           class="project-search__input"
+                           aria-label="Find base on name">
+                    <button type="submit" class="button">Search</button>
+                </form>
+                <div class="experience-grid project-grid">
+                    {% for testimony in testimony_list %}
+                            <h2>{{ testimony.name }} - {{ testimony.relationship }} - {{ testimony.message_date|date:"M Y" }}</h2>
+                            <span class="experience-category"></span>
+                            <p class="experience-description">{{ testimony.description }}</p>
+                            <div class="project-card-actions">
+                                <div class="project-actions">
+                                    {% if project.project_url %}
+                                        <a href="{{ testimony.testimony_url }}" class="button">Show Testimony</a>
+                                    {% endif %}
+                                    {% include "components/testimony_delete_modal.html" with testimony=testimony %}
+                                </div>
+                            </div>
+                        </article>
+                    {% empty %}
+                        {% if title_query %}
+                            <p class="empty-state">There is no testimony with that name.</p>
+                        {% else %}
+                            <p class="empty-state">No testimonial has been added.</p>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </main>
+{% endblock content %}

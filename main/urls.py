@@ -7,7 +7,11 @@ from main.views import (
     show_projects, 
     get_projects_json, 
     delete_project,
-    create_project
+    create_project,
+    create_testimony,
+    show_testimony,
+    delete_testimony,
+    get_testimonys_json,
 )
 
 app_name = "main"
@@ -20,4 +24,9 @@ urlpatterns = [
     path("projects/", show_projects, name="show_projects"),
     path("api/projects/", get_projects_json, name="get_projects_json"), 
     path("projects/<uuid:project_id>/delete/",delete_project,name="delete_project"),
+    path("testimony/add/", create_testimony, name="create_testimony"),
+    path("testimony/", show_testimony, name="show_testimony"),
+    path("testimony/<uuid:testimony_id>/delete/", delete_testimony, name="delete_testimony"),    
+    path('api/testimony/', get_testimonys_json, name='get_testimonys_json'),
+
 ]

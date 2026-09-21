@@ -60,3 +60,13 @@ class Project(models.Model):
 
     def __str__(self):
         return self.title
+
+class Testimony(models.Model) :
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255)
+    relationship = models.CharField(max_length=255)
+    description = models.TextField()
+    message_date = models.DateTimeField(default=timezone.now)    
+
+    def __str__(self) :
+        return self.name
