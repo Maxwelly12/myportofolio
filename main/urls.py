@@ -12,6 +12,10 @@ from main.views import (
     show_testimony,
     delete_testimony,
     get_testimonys_json,
+    register, 
+    login_user,
+    logout_user, 
+    toggle_star,
 )
 
 app_name = "main"
@@ -28,5 +32,12 @@ urlpatterns = [
     path("testimony/", show_testimony, name="show_testimony"),
     path("testimony/<uuid:testimony_id>/delete/", delete_testimony, name="delete_testimony"),    
     path('api/testimony/', get_testimonys_json, name='get_testimonys_json'),
-
+    path("register/", register, name="register"),
+    path("login/", login_user, name="login"),
+    path("logout/", logout_user, name="logout"),
+    path(
+    "projects/<uuid:project_id>/star/",
+    toggle_star,
+    name="toggle_star",
+),
 ]
