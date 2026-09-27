@@ -16,6 +16,7 @@ from main.views import (
     login_user,
     logout_user, 
     toggle_star,
+    toggle_star_testimony,
     show_univcourses,
 )
 
@@ -41,5 +42,10 @@ urlpatterns = [
     toggle_star,
     name="toggle_star",
 ), 
+    path(
+        "testimony/<uuid:testimony_id>/star/",
+        toggle_star_testimony,
+        name="toggle_star_testimony",
+    ),
     path("univcourse/", show_univcourses, name="show_univcourse"),
 ]

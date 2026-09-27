@@ -51,6 +51,9 @@ def show_education(request) :
 
 @login_required(login_url="/login/")
 def create_project(request):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+    
     form = ProjectForm(request.POST or None)
 
     if request.method == "POST" and form.is_valid():
@@ -101,7 +104,11 @@ def delete_project(request, project_id):
 
     return redirect("main:show_projects")
 
+@login_required(login_url="/login/")
 def create_testimony(request):
+    if not request.user.is_superuser :
+        raise PermissionDenied
+    
     form = TestimonyForm(request.POST or None)
 
     if request.method == "POST" and form.is_valid():
@@ -141,6 +148,7 @@ def get_testimonys_json(request):
     testimonys_json = serializers.serialize("json", testimonys)
     return HttpResponse(testimonys_json, content_type="application/json")
 
+@login_required(login_url="/login/")
 def delete_testimony(request, testimony_id):
     testimony = get_object_or_404(Testimony, pk=testimony_id)
 
@@ -192,8 +200,7 @@ def toggle_star(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
 
     if request.method == "POST":
-        # Kalau akun ini sudah pernah memberi star, batalkan star-nya.
-        # Kalau belum, tambahkan star.
+
         if request.user in project.starred_by.all():
             project.starred_by.remove(request.user)
         else:
@@ -207,3 +214,15 @@ def show_univcourses(request):
         "experience_list": Univcourses.objects.all(),
     }
     return render(request, "univcourse.html", context)
+
+@login_required(login_url="/login/")
+def toggle_star_testimony(request, testimony_id):
+    testimony = get_object_or_404(Testimony, pk=testimony_id)
+
+    if request.method == "POST":
+        if request.user in testimony.starred_by.all():
+            testimony.starred_by.remove(request.user)
+        else:
+            testimony.starred_by.add(request.user)
+
+    return redirect("main:show_testimony")

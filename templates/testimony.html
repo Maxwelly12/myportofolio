@@ -9,11 +9,13 @@
                 <p class="section-kicker">Another person testimony of me</p>
                 <div class="project-header">
                     <h1>Testimony</h1>
-                    <a href="{% url 'main:create_testimony' %}"
-                       class="button project-add-button">
-                        <span aria-hidden="true">+</span>
-                        Add Testimony
-                    </a>
+                    {% if user.is_superuser %}
+                        <a href="{% url 'main:create_testimony' %}"
+                        class="button project-add-button">
+                            <span aria-hidden="true">+</span>
+                            Add Testimony
+                        </a>
+                    {% endif %}
                 </div>
                 <form method="get"
                       action="{% url 'main:show_testimony' %}"
@@ -36,7 +38,10 @@
                                     {% if project.project_url %}
                                         <a href="{{ testimony.testimony_url }}" class="button">Show Testimony</a>
                                     {% endif %}
-                                    {% include "components/testimony_delete_modal.html" with testimony=testimony %}
+                                    {% include "components/testimony_star.html" with testimony=testimony %} 
+                                    {% if user.is_superuser %}
+                                        {% include "components/testimony_delete_modal.html" with testimony=testimony %}
+                                    {% endif %}
                                 </div>
                             </div>
                         </article>

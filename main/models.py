@@ -72,7 +72,9 @@ class Testimony(models.Model) :
     relationship = models.CharField(max_length=255)
     description = models.TextField()
     message_date = models.DateTimeField(default=timezone.now)    
-
+    starred_by = models.ManyToManyField(
+        User, related_name="starred_testimony", blank=True
+    )
     def __str__(self) :
         return self.name
 
