@@ -19,6 +19,7 @@
             <a href="{% url 'main:show_experience' %}">Experience</a>
             <a href="{% url 'main:show_education' %}">Education</a>
             <a href="{% url 'main:show_projects' %}">Projects</a>
+
             <a href="{% url 'main:show_testimony' %}">Testimony</a>    
             {% if user.is_authenticated %}
                 <span class="nav-user">{{ user.username }}</span>

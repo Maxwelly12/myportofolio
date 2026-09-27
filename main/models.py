@@ -75,3 +75,33 @@ class Testimony(models.Model) :
 
     def __str__(self) :
         return self.name
+
+class Univcourses(models.Model) :
+    UCOURSES_CHOICES = [
+        ('1', '1'),
+        ('2', '2'),
+        ('3', '3'), 
+        ('4', '4'), 
+        ('5', '5'),
+        ('6', '6'), 
+        ('7', '7'), 
+        ('8', '8'), 
+        ('choice', 'CHOICE'), 
+    ]
+
+    UCOURSES_CATEGORY = [
+        ('datascience', 'DataScience'),
+        ('cybersecurity', 'CyberSecurity'),
+        ('business', 'Business'),
+        ('moral', 'Moral'),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length = 255)
+    semester = models.CharField(max_length=10, choices=UCOURSES_CHOICES, default='1')
+    category = models.CharField(max_length=255, choices=UCOURSES_CATEGORY, default='business')
+    ended_at = models.DateTimeField(blank=True, null=True)
+
+    @property
+    def isfinished(self) :
+        return self.ended_at  is None

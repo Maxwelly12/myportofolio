@@ -10,7 +10,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.decorators import login_required 
 from django.core.exceptions import PermissionDenied       
 
-from main.models import Experience, Education, Project, Testimony
+from main.models import Experience, Education, Project, Testimony, Univcourses
 from main.forms import ProjectForm, TestimonyForm
 
 
@@ -200,3 +200,10 @@ def toggle_star(request, project_id):
             project.starred_by.add(request.user)
 
     return redirect("main:show_projects")
+
+def show_univcourses(request):
+    context = {
+        "name": "Maxwelly F.H. Simatupang",
+        "experience_list": Univcourses.objects.all(),
+    }
+    return render(request, "univcourse.html", context)
