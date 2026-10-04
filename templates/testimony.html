@@ -10,17 +10,18 @@
                 <div class="project-header">
                     <h1>Testimony</h1>
                     {% if user.is_superuser %}
-                        <a href="{% url 'main:create_testimony' %}"
-                        class="button project-add-button">
+                        <button type="button"
+                                class="button project-add-button"
+                                popovertarget="add-testimony-modal">
                             <span aria-hidden="true">+</span>
                             Add Testimony
-                        </a>
+                        </button>
                     {% endif %}
                 </div>
-                <form method="get"
-                      action="{% url 'main:show_testimony' %}"
-                      class="project-search">
+
+                <form id="testimony-search-form" class="project-search">
                     <input type="search"
+                           id="search-input"
                            name="title"
                            value="{{ title_query }}"
                            placeholder="Find base on name"
@@ -28,32 +29,240 @@
                            aria-label="Find base on name">
                     <button type="submit" class="button">Search</button>
                 </form>
-                <div class="experience-grid project-grid">
-                    {% for testimony in testimony_list %}
-                            <h2>{{ testimony.name }} - {{ testimony.relationship }} - {{ testimony.message_date|date:"M Y" }}</h2>
-                            <span class="experience-category"></span>
-                            <p class="experience-description">{{ testimony.description }}</p>
-                            <div class="project-card-actions">
-                                <div class="project-actions">
-                                    {% if project.project_url %}
-                                        <a href="{{ testimony.testimony_url }}" class="button">Show Testimony</a>
-                                    {% endif %}
-                                    {% include "components/testimony_star.html" with testimony=testimony %} 
-                                    {% if user.is_superuser %}
-                                        {% include "components/testimony_delete_modal.html" with testimony=testimony %}
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </article>
-                    {% empty %}
-                        {% if title_query %}
-                            <p class="empty-state">There is no testimony with that name.</p>
-                        {% else %}
-                            <p class="empty-state">No testimonial has been added.</p>
-                        {% endif %}
-                    {% endfor %}
-                </div>
+
+                <div id="loading" class="empty-state hide"><p>Loading testimonies...</p></div>
+                <div id="error" class="empty-state hide"><p>Failed to load testimonies. Please try again.</p></div>
+                <div id="empty" class="empty-state hide"><p>No testimonial has been added or found.</p></div>
+                <div id="grid" class="experience-grid project-grid hide"></div>
             </div>
         </section>
     </main>
+
+    {% if user.is_superuser %}
+    <div id="add-testimony-modal"
+         class="project-form-modal"
+         popover="auto"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="add-testimony-modal-title">
+        <button type="button" class="project-form-modal__backdrop"
+                popovertarget="add-testimony-modal" popovertargetaction="hide"
+                aria-label="Close form"></button>
+        <div class="project-form-modal__content">
+            <button type="button" class="project-form-modal__close"
+                    popovertarget="add-testimony-modal" popovertargetaction="hide"
+                    aria-label="Close form">×</button>
+            <h2 id="add-testimony-modal-title">Add New Testimony</h2>
+            <form id="testimony-form" method="post" action="{% url 'main:create_testimony' %}" class="project-form">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% for error in field.errors %}
+                            <p class="form-error">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+                <div class="project-form-modal__actions">
+                    <button type="button" class="button button-secondary"
+                            popovertarget="add-testimony-modal" popovertargetaction="hide">Cancel</button>
+                    <button type="submit" class="button">Add Testimony</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+    <script>
+    const BASE_TESTIMONY_ENDPOINT = "{% url 'main:get_testimonys_json' %}";
+    const CREATE_TESTIMONY_ENDPOINT = "{% url 'main:create_testimony_ajax' %}";
+    const IS_SUPERUSER = "{{ user.is_superuser|yesno:'true,false' }}" === "true";
+    const SEARCH_DEBOUNCE_DELAY = 300;
+    const DUMMY_ID = '00000000-0000-0000-0000-000000000000';
+    let testimonyAbortController;
+    let searchDebounceTimer;
+
+    const loadingState = document.getElementById('loading');
+    const errorState = document.getElementById('error');
+    const emptyState = document.getElementById('empty');
+    const gridContainer = document.getElementById('grid');
+    const searchForm = document.getElementById('testimony-search-form');
+    const searchInput = document.getElementById('search-input');
+    const testimonyForm = document.getElementById('testimony-form');
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#39;');
+    }
+
+    // "2025-03-14" -> "Mar 2025" (setara |date:"M Y")
+    function formatMonthYear(value) {
+        const date = new Date(value);
+        if (isNaN(date)) return String(value ?? '');
+        return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+    }
+
+    function displayPageSection({ showLoading = false, showError = false, showEmpty = false, showGrid = false }) {
+        loadingState.classList.toggle('hide', !showLoading);
+        errorState.classList.toggle('hide', !showError);
+        emptyState.classList.toggle('hide', !showEmpty);
+        gridContainer.classList.toggle('hide', !showGrid);
+    }
+
+    function buildTestimonyCardElement(item) {
+        const t = item.fields;
+        const id = item.pk;
+
+        const article = document.createElement('article');
+        article.className = 'experience-card';
+
+        const deleteUrl = "{% url 'main:delete_testimony' '00000000-0000-0000-0000-000000000000' %}".replace(DUMMY_ID, id);
+        const starUrl = "{% url 'main:toggle_star_testimony' '00000000-0000-0000-0000-000000000000' %}".replace(DUMMY_ID, id);
+
+        const deleteHtml = IS_SUPERUSER
+            ? `<form method="post" action="${deleteUrl}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="button button-danger"
+                        onclick="return confirm('Are you sure you want to delete this testimony?');">Delete</button>
+            </form>`
+            : '';
+
+        const isStarredClass = t.is_starred ? " is-starred" : "";
+        const starText = t.is_starred ? "Unstar" : "Star";
+        const starTitle = t.star_count > 0
+            ? `Starred by ${escapeHtml(t.starred_by_names)}`
+            : "Be the first to give a star";
+
+        article.innerHTML = `
+            <h2>${escapeHtml(t.name)} - ${escapeHtml(t.relationship)} - ${escapeHtml(formatMonthYear(t.message_date))}</h2>
+            <span class="experience-category"></span>
+            <p class="experience-description">${escapeHtml(t.description)}</p>
+            <div class="project-card-actions">
+                <div class="project-actions">
+                    <form method="post" action="${starUrl}" class="star-form">
+                        {% csrf_token %}
+                        <button type="submit" class="button button-star${isStarredClass}" title="${starTitle}">
+                            <span aria-hidden="true">★</span>
+                            ${starText}
+                            <span class="star-count">${t.star_count}</span>
+                        </button>
+                    </form>
+                    ${deleteHtml}
+                </div>
+            </div>
+        `;
+        return article;
+    }
+
+    async function fetchTestimonies(searchQuery = "") {
+        if (testimonyAbortController) testimonyAbortController.abort();
+        testimonyAbortController = new AbortController();
+
+        try {
+            displayPageSection({ showLoading: true });
+
+            const url = searchQuery
+                ? `${BASE_TESTIMONY_ENDPOINT}?title=${encodeURIComponent(searchQuery)}`
+                : BASE_TESTIMONY_ENDPOINT;
+
+            const response = await fetch(url, {
+                headers: { 'Accept': 'application/json' },
+                signal: testimonyAbortController.signal,
+            });
+            if (!response.ok) throw new Error('Failed to fetch data');
+
+            const data = await response.json();
+
+            if (data.length === 0) {
+                displayPageSection({ showEmpty: true });
+            } else {
+                gridContainer.innerHTML = '';
+                data.forEach(item => gridContainer.appendChild(buildTestimonyCardElement(item)));
+                displayPageSection({ showGrid: true });
+            }
+        } catch (error) {
+            if (error.name === 'AbortError') return;
+            console.error('Error loading testimonies:', error);
+            displayPageSection({ showError: true });
+        }
+    }
+
+    function searchTestimonies() {
+        fetchTestimonies(searchInput.value.trim());
+    }
+
+    searchInput.addEventListener("input", function () {
+        clearTimeout(searchDebounceTimer);
+        searchDebounceTimer = setTimeout(searchTestimonies, SEARCH_DEBOUNCE_DELAY);
+    });
+
+    searchForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        clearTimeout(searchDebounceTimer);
+        searchTestimonies();
+    });
+
+    function closeTestimonyModal() {
+        document.getElementById("add-testimony-modal").hidePopover();
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    async function addTestimony(event) {
+        event.preventDefault();
+
+        const submitButton = testimonyForm.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+
+        try {
+            const response = await fetch(CREATE_TESTIMONY_ENDPOINT, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                body: new FormData(testimonyForm),
+            });
+            const result = await response.json().catch(() => ({}));
+
+            if (response.ok) {
+                testimonyForm.reset();
+                closeTestimonyModal();
+                showToast('Success', 'New testimony has been added!', 'success');
+                fetchTestimonies(searchInput.value.trim());
+            } else {
+                const errorMessages = result.errors
+                    ? Object.values(result.errors).flat().map(error => error.message)
+                    : [result.message || `An error occurred (status ${response.status}).`];
+                showToast('Failed to add testimony', errorMessages.join(' '), 'error');
+            }
+        } catch (error) {
+            console.error('Error adding testimony:', error);
+            showToast('Failed to add testimony', 'Unable to reach the server. Please try again.', 'error');
+        } finally {
+            submitButton.disabled = false;
+        }
+    }
+
+    // Modal hanya ada untuk superuser, jadi testimonyForm bisa null
+    if (testimonyForm) {
+        testimonyForm.addEventListener('submit', addTestimony);
+    }
+
+    fetchTestimonies(searchInput.value.trim());
+    </script>
 {% endblock content %}

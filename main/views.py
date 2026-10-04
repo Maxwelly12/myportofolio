@@ -140,18 +140,11 @@ def create_testimony(request):
     return render(request, "testimony_form.html", context)
 
 def show_testimony(request):
-    json_response = get_testimonys_json(request)
-
-    testimonys = serializers.deserialize(
-        "json",
-        json_response.content.decode("utf-8"),
-    )
-    testimonys = [testimony.object for testimony in testimonys]
     title_query = request.GET.get("title", "").strip()
     context = {
         "name": "Maxwelly F.H.  Simatupang",
-        "testimony_list": testimonys,
         "title_query": title_query,
+        "form" : TestimonyForm(),
     }
     return render(request, "testimony.html", context)
 
@@ -162,8 +155,26 @@ def get_testimonys_json(request):
     if title_query:
         testimonys = testimonys.filter(name__icontains=title_query)
 
-    testimonys_json = serializers.serialize("json", testimonys)
-    return HttpResponse(testimonys_json, content_type="application/json")
+    data = []
+    for test in testimonys :
+        starred_user = test.starred_by.all();
+        is_starred = request.user in starred_user if request.user.is_authenticated else False
+        starred_by_names = ", ".join([u.username for u in starred_user])
+
+        data.append({
+            "pk": str(test.id),
+            "fields": {
+                "name": test.name,
+                "relationship": test.relationship,
+                "description": test.description,
+                "message_date": test.message_date,
+                "star_count": starred_user.count(),
+                "is_starred": is_starred,
+                "starred_by_names": starred_by_names,
+            }
+        })
+
+    return JsonResponse(data, safe=False)
 
 @login_required(login_url="/login/")
 def delete_testimony(request, testimony_id):
@@ -257,6 +268,24 @@ def create_project_ajax(request):
         project = form.save()
         return JsonResponse(
             {"message": "Proyek berhasil ditambahkan.", "pk": str(project.id)},
+            status=201,
+        )
+
+    return JsonResponse({"errors": form.errors.get_json_data()}, status=400)
+
+@require_POST
+def create_testimony_ajax(request):
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {"message": "Hanya pemilik portofolio yang dapat menambahkan testimony."},
+            status=403,
+        )
+
+    form = TestimonyForm(request.POST)
+    if form.is_valid():
+        testimony = form.save()
+        return JsonResponse(
+            {"message": "Testimony berhasil ditambahkan.", "pk": str(testimony.id)},
             status=201,
         )
 

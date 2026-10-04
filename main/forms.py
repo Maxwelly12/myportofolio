@@ -63,6 +63,7 @@ class ProjectForm(ModelForm):
 
     def clean_description(self):
         return strip_tags(self.cleaned_data["description"]).strip()
+    
 class TestimonyForm(ModelForm) :
     class Meta:
         model = Testimony

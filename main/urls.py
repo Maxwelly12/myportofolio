@@ -19,6 +19,7 @@ from main.views import (
     toggle_star_testimony,
     show_univcourses,
     create_project_ajax,
+    create_testimony_ajax,
 )
 
 app_name = "main"
@@ -50,4 +51,5 @@ urlpatterns = [
     ),
     path("univcourse/", show_univcourses, name="show_univcourse"),
     path("projects/add-ajax/", create_project_ajax, name="create_project_ajax"),
+    path("testimony/add-ajax/", create_testimony_ajax, name="create_testimony_ajax"),
 ]
