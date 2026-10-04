@@ -39,48 +39,15 @@
     </main>
 
     {% if user.is_superuser %}
-    <div id="add-testimony-modal"
-         class="project-form-modal"
-         popover="auto"
-         role="dialog"
-         aria-modal="true"
-         aria-labelledby="add-testimony-modal-title">
-        <button type="button" class="project-form-modal__backdrop"
-                popovertarget="add-testimony-modal" popovertargetaction="hide"
-                aria-label="Close form"></button>
-        <div class="project-form-modal__content">
-            <button type="button" class="project-form-modal__close"
-                    popovertarget="add-testimony-modal" popovertargetaction="hide"
-                    aria-label="Close form">×</button>
-            <h2 id="add-testimony-modal-title">Add New Testimony</h2>
-            <form id="testimony-form" method="post" action="{% url 'main:create_testimony' %}" class="project-form">
-                {% csrf_token %}
-                {% for field in form %}
-                    <div class="form-group">
-                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                        {{ field }}
-                        {% for error in field.errors %}
-                            <p class="form-error">{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endfor %}
-                <div class="project-form-modal__actions">
-                    <button type="button" class="button button-secondary"
-                            popovertarget="add-testimony-modal" popovertargetaction="hide">Cancel</button>
-                    <button type="submit" class="button">Add Testimony</button>
-                </div>
-            </form>
-        </div>
-    </div>
+        {% include "components/testimony_form_modal.html" %}
     {% endif %}
+
     <script>
     const BASE_TESTIMONY_ENDPOINT = "{% url 'main:get_testimonys_json' %}";
     const CREATE_TESTIMONY_ENDPOINT = "{% url 'main:create_testimony_ajax' %}";
     const IS_SUPERUSER = "{{ user.is_superuser|yesno:'true,false' }}" === "true";
-    const SEARCH_DEBOUNCE_DELAY = 300;
     const DUMMY_ID = '00000000-0000-0000-0000-000000000000';
     let testimonyAbortController;
-    let searchDebounceTimer;
 
     const loadingState = document.getElementById('loading');
     const errorState = document.getElementById('error');
@@ -88,6 +55,8 @@
     const gridContainer = document.getElementById('grid');
     const searchForm = document.getElementById('testimony-search-form');
     const searchInput = document.getElementById('search-input');
+    const SEARCH_DEBOUNCE_DELAY = 300;
+    let searchDebounceTimer;
     const testimonyForm = document.getElementById('testimony-form');
 
     function escapeHtml(value) {
@@ -197,7 +166,10 @@
 
     searchInput.addEventListener("input", function () {
         clearTimeout(searchDebounceTimer);
-        searchDebounceTimer = setTimeout(searchTestimonies, SEARCH_DEBOUNCE_DELAY);
+
+        searchDebounceTimer = setTimeout(function () {
+            searchTestimonies();
+        }, SEARCH_DEBOUNCE_DELAY);
     });
 
     searchForm.addEventListener("submit", function (event) {

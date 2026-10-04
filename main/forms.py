@@ -99,4 +99,22 @@ class TestimonyForm(ModelForm) :
                 }
             ),
         }
+
+    def clean_name(self):
+        name = strip_tags(self.cleaned_data["name"]).strip()
+        if not name:
+            raise ValidationError("Name cannot consist only of HTML tags.")
+        return name
+
+    def clean_relationship(self):
+        relationship = strip_tags(self.cleaned_data["relationship"]).strip()
+        if not relationship:
+            raise ValidationError("Relationship cannot consist only of HTML tags.")
+        return relationship
+
+    def clean_description(self):
+        description = strip_tags(self.cleaned_data["description"]).strip()
+        if not description:
+            raise ValidationError("Testimony cannot consist only of HTML tags.")
+        return description
         

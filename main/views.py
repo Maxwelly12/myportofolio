@@ -185,6 +185,9 @@ def delete_testimony(request, testimony_id):
         messages.success(request, "Testimony has been erased!")
         return redirect("main:show_testimony")
 
+    if not request.user.is_superuser:
+       raise PermissionDenied
+    
     return redirect("main:show_testimony")
 
 def register(request):
