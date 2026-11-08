@@ -1,7 +1,7 @@
 from django.utils.html import strip_tags
 from rest_framework import serializers
 
-from main.models import Project
+from main.models import Project, Testimony
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -29,6 +29,49 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     def validate_tech_stack(self, value):
         return strip_tags(value)
+
+    def get_star_count(self, obj):
+        return obj.starred_by.count()
+
+    def get_is_starred(self, obj):
+        request = self.context.get("request")
+        if request is None or not request.user.is_authenticated:
+            return False
+        return request.user in obj.starred_by.all()
+
+    def get_starred_by_names(self, obj):
+        return ", ".join(user.username for user in obj.starred_by.all())
+
+class TestimonySerializer(serializers.ModelSerializer):
+    star_count = serializers.SerializerMethodField()
+    is_starred = serializers.SerializerMethodField()
+    starred_by_names = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Testimony
+        fields = [
+            "id", "name", "relationship", "description", "message_date",
+            "star_count", "is_starred", "starred_by_names",
+        ]
+        read_only_fields = ["id", "message_date"]
+
+    def validate_name(self, value):
+        value = strip_tags(value).strip()
+        if not value:
+            raise serializers.ValidationError("Name cannot be empty.")
+        return value
+
+    def validate_relationship(self, value):
+        value = strip_tags(value).strip()
+        if not value:
+            raise serializers.ValidationError("Relationship cannot be empty.")
+        return value
+
+    def validate_description(self, value):
+        value = strip_tags(value).strip()
+        if not value:
+            raise serializers.ValidationError("Testimony cannot be empty.")
+        return value
 
     def get_star_count(self, obj):
         return obj.starred_by.count()

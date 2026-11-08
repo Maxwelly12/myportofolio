@@ -141,10 +141,15 @@ def create_testimony(request):
 
 def show_testimony(request):
     title_query = request.GET.get("title", "").strip()
+    is_editor = (
+        request.user.is_authenticated
+        and request.user.groups.filter(name="Editor").exists()
+    )
     context = {
         "name": "Maxwelly F.H.  Simatupang",
         "title_query": title_query,
         "form" : TestimonyForm(),
+        "is_editor": is_editor,
     }
     return render(request, "testimony.html", context)
 

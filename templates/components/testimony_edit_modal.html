@@ -1,0 +1,44 @@
+<div id="edit-testimony-modal"
+     class="project-form-modal"
+     popover="auto"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="edit-testimony-modal-title">
+    <button type="button"
+            class="project-form-modal__backdrop"
+            popovertarget="edit-testimony-modal"
+            popovertargetaction="hide"
+            aria-label="Close edit testimony form"></button>
+
+    <div class="project-form-modal__content">
+        <button type="button"
+                class="project-form-modal__close"
+                popovertarget="edit-testimony-modal"
+                popovertargetaction="hide"
+                aria-label="Close edit testimony form">×</button>
+
+        <h2 id="edit-testimony-modal-title">Edit Testimony</h2>
+        <form id="testimony-edit-form" class="project-form">
+            <input type="hidden" name="id" id="edit-testimony-id">
+            <div class="form-group">
+                <label for="edit-testimony-name">Name</label>
+                <input type="text" id="edit-testimony-name" name="name" maxlength="255" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-testimony-relationship">What is your relationship to Maxwelly F.H. Simatupang</label>
+                <input type="text" id="edit-testimony-relationship" name="relationship" maxlength="255" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-testimony-description">Testimony</label>
+                <textarea id="edit-testimony-description" name="description" rows="3" required></textarea>
+            </div>
+            <div class="project-form-modal__actions">
+                <button type="button"
+                        class="button button-secondary"
+                        popovertarget="edit-testimony-modal"
+                        popovertargetaction="hide">Cancel</button>
+                <button type="submit" class="button">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
