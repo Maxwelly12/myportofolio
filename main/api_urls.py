@@ -11,4 +11,5 @@ urlpatterns = [
     path("testimony/", api_views.testimony_list, name="testimony-list"),
     path("testimony/<uuid:testimony_id>/", api_views.testimony_detail, name="testimony-detail"),
     path("testimony/<uuid:testimony_id>/star/", api_views.testimony_star, name="testimony-star"),
+    path("auth/logout/", api_views.api_logout, name="api_logout"),
 ]

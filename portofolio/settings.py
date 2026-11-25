@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
+import os
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,7 +27,15 @@ SECRET_KEY = 'django-insecure-o=h9=bw85-!58h!sh#w5de9y^^b!9w@zk1qn$s@j*^h1p5$$9u
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "maxwelly-fh-myportofolio.pws.cs.ui.ac.id"]
+# Toggle this to True when deploying (e.g. read from an env var instead).
+PRODUCTION = os.getenv("PRODUCTION", "False") == "True"
+
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "10.0.2.2",  # Android emulator's alias for the host machine's localhost
+    "maxwelly-fh-myportofolio.pws.cs.ui.ac.id",
+]
 
 
 # Application definition
@@ -37,12 +47,34 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "corsheaders",
     'main',
     'rest_framework',
+    'rest_framework.authtoken',
 ]
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+}
+
+# Local development CORS settings for Flutter Web (Chrome).
+# Allow all origins locally (PRODUCTION=False); restrict in production.
+# In production, set CORS_ALLOWED_ORIGINS env var (comma-separated) to your
+# deployed web app's origin(s) (native Android apps do not use CORS).
+CORS_ALLOW_ALL_ORIGINS = not PRODUCTION
+if PRODUCTION:
+    CORS_ALLOWED_ORIGINS = [
+        origin.strip()
+        for origin in os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
+        if origin.strip()
+    ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
